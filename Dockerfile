@@ -16,8 +16,9 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+RUN wget -O /start.sh "https://raw.githubusercontent.com/pmontu/dockerfile-python-java-postgres-tinkerpop/master/start.sh" \
+  && chmod 777 /start.sh
 
-
-# ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["/start.sh"]
 
 CMD ["sh"]

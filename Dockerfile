@@ -16,9 +16,16 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN wget -O /start.sh "https://raw.githubusercontent.com/pmontu/dockerfile-python-java-postgres-tinkerpop/master/start.sh" \
+# script to start gremlin server for bitbucket pipeline
+RUN printf '#!/bin/bash\ncd /apache-tinkerpop-gremlin-server-3.2.4\nnohup bin/gremlin-server.sh conf/gremlin-server-modern-py.yaml > /dev/null 2>&1 &\nexec "$@"' > /start.sh \
   && chmod 777 /start.sh
 
-ENTRYPOINT ["/start.sh"]
+RUN apt-get update \
+  && apt-get install -y openssh-server
 
-CMD ["sh"]
+EXPOSE 8182
+
+ADD files /
+RUN chmod 700 /default_cmd
+CMD ["/default_cmd"]
+

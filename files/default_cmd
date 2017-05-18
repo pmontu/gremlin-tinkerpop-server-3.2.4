@@ -1,0 +1,19 @@
+#!/bin/bash
+
+env
+
+IP=$(ip -o -4 addr list eth0 | perl -n -e 'if (m{inet\s([\d\.]+)\/\d+\s}xms) { print $1 }')
+echo "IP=$IP"
+
+sed -i "s|^host:.*|host: $IP|" /apache-tinkerpop-gremlin-server-3.2.4/conf/gremlin-server-modern-py.yaml
+
+mkdir /var/run/sshd
+
+echo "changing root password"
+echo 'root:gremlin' |chpasswd
+
+echo "starting sshd"
+/usr/sbin/sshd
+
+echo "starting gremlin-server"
+/apache-tinkerpop-gremlin-server-3.2.4/bin/gremlin-server.sh /apache-tinkerpop-gremlin-server-3.2.4/conf/gremlin-server-modern-py.yaml
